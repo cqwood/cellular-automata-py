@@ -28,9 +28,6 @@ class ConwaysRules():
     def getColor(self, state):
         return self.colors[state]
 
-    def states(self):
-        return self.states
-
     def startState(self):
         return random.choice(self.states)
 
