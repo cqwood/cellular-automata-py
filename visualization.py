@@ -39,6 +39,10 @@ class Grid:
         self.width = size[0]
         self.height = size[1]
         self.rule = rule
+        self.surface = pygame.Surface((20+(self.width*10),20+(self.height*10)))
+        self.surface.fill((100,100,100))
+        self.font = pygame.font.SysFont('helvetica', 30)
+        self.counts = {}
         for x in range(0, self.width):
             for y in range(0, self.height):
                 possible_state = None
@@ -52,11 +56,16 @@ class Grid:
 
     def update(self):
         self.saveNeighborhood()
+        self.counts = {}
+        for state in self.rule.states:
+            self.counts[state] = 0
         for cell in self.cells:
             neighbors = []
             for neighbor in self.getNeighborhood(cell.getLocation()):
                 neighbors.append(self.getOldState(neighbor))
             cell.update(neighbors)
+            self.counts[cell.getState()] += 1
+
 
     def saveNeighborhood(self):
         self.oldStates = []
@@ -64,8 +73,16 @@ class Grid:
             self.oldStates.append(cell.getState())
 
     def render(self, screen):
+        screen.blit(self.surface, (0,0))
         for cell in self.cells:
             cell.render(screen)
+        nameSurface = self.font.render(self.rule.name, True, (255,255,255))
+        screen.blit(nameSurface, (1040,40))
+        offset = 80
+        for state, count in self.counts.items():
+            surface = self.font.render(state+' : '+str(count), True, (255,255,255))
+            screen.blit(surface, (1040,offset))
+            offset += 40
 
     def getCell(self, location):
         return self.cells[location[1]+(location[0]*self.height)]

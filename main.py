@@ -5,7 +5,7 @@ import visualization
 
 pygame.init()
 pygame.display.set_caption("Cellular Awesomeness")
-screen = pygame.display.set_mode((1100,1100))
+screen = pygame.display.set_mode((1500,1020))
 GRID_SIZE = (100,100)
 
 grid = visualization.Grid( GRID_SIZE, rules.Conways())
@@ -59,6 +59,7 @@ while not done:
         grid.update()
         tick = False
 
+    screen.fill((0,0,0))
     grid.render(screen)
     pygame.display.flip()
 

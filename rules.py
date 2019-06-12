@@ -6,6 +6,7 @@ class Conways():
     def __init__(self):
         self.colors = { "Alive": (255,255,255), "Dead": (0,0,0) }
         self.states = ["Alive", "Dead"]
+        self.name = "Conway's Game of Life"
 
     def run(self, cell, neighborhood):
         del neighborhood[4] #I don't count
@@ -33,6 +34,11 @@ class Conways():
         return "Dead"
 
 class ColorfulConway(Conways):
+    def __init__(self):
+        self.colors = { "Alive": (255,255,255), "Dead": (0,0,0) }
+        self.states = ["Alive", "Dead"]
+        self.name = "Conway's [Colorful] Game of Life"
+
     def getColor(self, state):
         return self.colors[state] if state == "Dead" else randomColor()
 
@@ -40,6 +46,8 @@ class ForestFire(Conways):
     def __init__(self):
         self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
         self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire"
+
 
     def run(self, cell, neighborhood):
         neighborhood = self.pruneNeighborhood(neighborhood)
@@ -73,6 +81,7 @@ class ForestFireAdvanced(ForestFire):
     def __init__(self):
         self.colors = { "Tree": (50,255,50), "Empty": (0,0,0), "Burning": (255,0,0), "Dead": (100,100,100)}
         self.states = ["Tree", "Dead", "Burning", "Empty"]
+        self.name = "Advanced Forest Fire"
 
     def run(self, cell, neighborhood):
         neighborhood = self.pruneNeighborhood(neighborhood)
@@ -99,6 +108,11 @@ class ForestFireAdvanced(ForestFire):
                 return "Dead"
 
 class WindyForestFireSouth(ForestFire):
+    def __init__(self):
+        self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
+        self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire: South Wind"
+
     def pruneNeighborhood(self, neighborhood):
         del neighborhood[8]
         del neighborhood[7]
@@ -108,6 +122,11 @@ class WindyForestFireSouth(ForestFire):
         return neighborhood
 
 class WindyForestFireEast(ForestFire):
+    def __init__(self):
+        self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
+        self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire: East Wind"
+
     def pruneNeighborhood(self, neighborhood):
         del neighborhood[4]
         del neighborhood[3]
