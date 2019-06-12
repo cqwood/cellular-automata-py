@@ -3,7 +3,7 @@ import time
 import random
 pygame.init()
 pygame.display.set_caption("Cellular Awesomeness")
-screen = pygame.display.set_mode((1100,1100))
+screen = pygame.display.set_mode((1500,1020))
 GRID_SIZE = (100,100)
 
 def randomColor():
@@ -13,6 +13,7 @@ class ConwaysRules():
     def __init__(self):
         self.colors = { "Alive": (255,255,255), "Dead": (0,0,0) }
         self.states = ["Alive", "Dead"]
+        self.name = "Conway's Game of Life"
 
     def run(self, cell, neighborhood):
         del neighborhood[4] #I don't count
@@ -28,6 +29,9 @@ class ConwaysRules():
     def getColor(self, state):
         return self.colors[state]
 
+    def states(self):
+        return self.states
+
     def startState(self):
         return random.choice(self.states)
 
@@ -40,6 +44,11 @@ class ConwaysRules():
         return "Dead"
 
 class ColorfulConway(ConwaysRules):
+    def __init__(self):
+        self.colors = { "Alive": (255,255,255), "Dead": (0,0,0) }
+        self.states = ["Alive", "Dead"]
+        self.name = "Conway's [Colorful] Game of Life"
+    
     def getColor(self, state):
         return self.colors[state] if state == "Dead" else randomColor()
 
@@ -47,6 +56,7 @@ class ForestFire(ConwaysRules):
     def __init__(self):
         self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
         self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire"
 
     def run(self, cell, neighborhood):
         neighborhood = self.pruneNeighborhood(neighborhood)
@@ -80,6 +90,7 @@ class ForestFireAdvanced(ForestFire):
     def __init__(self):
         self.colors = { "Tree": (50,255,50), "Empty": (0,0,0), "Burning": (255,0,0), "Dead": (100,100,100)}
         self.states = ["Tree", "Dead", "Burning", "Empty"]
+        self.name = "Advanced Forest Fire"
 
     def run(self, cell, neighborhood):
         neighborhood = self.pruneNeighborhood(neighborhood)
@@ -106,6 +117,11 @@ class ForestFireAdvanced(ForestFire):
                 return "Dead"
 
 class WindyForestFireSouth(ForestFire):
+    def __init__(self):
+        self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
+        self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire: South Wind"
+        
     def pruneNeighborhood(self, neighborhood):
         del neighborhood[8]
         del neighborhood[7]
@@ -115,6 +131,11 @@ class WindyForestFireSouth(ForestFire):
         return neighborhood
 
 class WindyForestFireEast(ForestFire):
+    def __init__(self):
+        self.colors = { "Tree": (50,255,50), "Dead": (0,0,0), "Burning": (255,0,0)}
+        self.states = ["Tree", "Dead", "Burning"]
+        self.name = "Forest Fire: East Wind"
+        
     def pruneNeighborhood(self, neighborhood):
         del neighborhood[4]
         del neighborhood[3]
@@ -162,6 +183,10 @@ class Grid:
         self.width = size[0]
         self.height = size[1]
         self.rule = rule
+        self.surface = pygame.Surface((20+(self.width*10),20+(self.height*10)))
+        self.surface.fill((100,100,100))
+        self.font = pygame.font.SysFont('helvetica', 30)
+        self.counts = {}
         for x in range(0, self.width):
             for y in range(0, self.height):
                 possible_state = None
@@ -175,11 +200,15 @@ class Grid:
 
     def update(self):
         self.saveNeighborhood()
+        self.counts = {}
+        for state in self.rule.states:
+            self.counts[state] = 0
         for cell in self.cells:
             neighbors = []
             for neighbor in self.getNeighborhood(cell.getLocation()):
                 neighbors.append(self.getOldState(neighbor))
             cell.update(neighbors)
+            self.counts[cell.getState()] += 1
 
     def saveNeighborhood(self):
         self.oldStates = []
@@ -187,8 +216,16 @@ class Grid:
             self.oldStates.append(cell.getState())
 
     def render(self, screen):
+        screen.blit(self.surface, (0,0))
         for cell in self.cells:
             cell.render(screen)
+        nameSurface = self.font.render(self.rule.name, True, (255,255,255))
+        screen.blit(nameSurface, (1040,40))
+        offset = 80
+        for state, count in self.counts.items():
+            surface = self.font.render(state+' : '+str(count), True, (255,255,255))
+            screen.blit(surface, (1040,offset))
+            offset += 40
 
     def getCell(self, location):
         return self.cells[location[1]+(location[0]*self.height)]
@@ -269,6 +306,7 @@ while not done:
         grid.update()
         tick = False
 
+    screen.fill((0,0,0))
     grid.render(screen)
     pygame.display.flip()
 
